@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{%load bootstrap5 %}
+
+{% block content %}
+    <div class="container">
+        <div class="jumbotron text-center">
+
+            <form action="" method = "post" class="post-form">
+                {% csrf_token %}
+                <label for="RST NUMBER">RST NUMBER:</label><br> <input name="rst" type="text"  value="{{data.rst_no}}"><br><br>
+                <label for="NET WEIGHT">NET WEIGHT:</label><br> <input name="net_wt" type="text"  value="{{data.net_wt}}"><br><br>
+                <label for="RATE">RATE:</label><br> <input name="rate" type="text" value="{{data.rate}}"><br><br>
+                <label for="TOTAL">TOTAL:</label><br> <input name="total" type="text"  value="{{data.total}}"><br><br>
+                <input formaction="{% url 'confirm' data.pk %}" type="submit" value="Confirm">
+                <input formaction="{% url 'raw_material_view' %}" type="submit" value="Cancel">
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html '%}
+{% load bootstrap5 %}
+{% block content %}
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                <strong> Message! </strong> {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+
+    <div class="container">
+        <div class="jumbotron text-center">
+            <table class="table" id="dataTable">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">RST</th>
+                        <th scope="col">Net Weight</th>
+                        <th scope="col">Rate</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Action</th>
+
+
+                    </tr>
+                </thead>
+            {% for data in rm_data %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{data.pk}}</th>
+                        <td>{{data.rst_no}}</td>
+                        <td>{{data.net_wt}}</td>
+                        <td>{{data.rate}}</td>
+                        <td>{{data.total}}</td>
+                        <td>
+                            <a href="{% url 'rm_update' data.id %}">
+                                <button type="button">Update</button>
+                            </a>
+                            <a href="{% url 'delete_rm_entry' data.id %}">
+                                <button type="button">Delete</button>
+                            </a>
+                        </td>
+                    </tr>
+
+                  </tbody>
+                {% endfor %}
+            </table>
+
+
+        </div>
+    </div>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+
+<!-- your_template.html -->
+
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            searching: true,  // Enable search functionality
+            ordering: true,   // Enable sorting
+            paging: true      // Enable pagination
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html '%}
+{% load static %}
+{% load bootstrap5 %}
+{% block content %}
+    <div class="container">
+        <div class="jumbotron text-center">
+            <table class="table" id="newt">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Production RST</th>
+                        <th scope="col">Production Net Weight</th>
+                        <th scope="col">Vehicle Number</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+
+            {% for data in production_data %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{data.pk}}</th>
+                        <td>{{data.product_rst}}</td>
+                        <td>{{data.product_net_weight}}</td>
+                        <td>{{data.vehicle_no}}</td>
+                        <td>
+                            <a href="{% url 'edit_production' data.id %}">
+                                <button type="button">Edit</button>
+                            </a>
+                            <a href="{% url 'delete_production' data.id %}">
+                                <button type="button">Delete</button>
+                            </a>
+                        </td>
+                    </tr>
+
+                  </tbody>
+                {% endfor %}
+            </table>
+
+            <button id="btn" onclick="myFunction()">Total net weight</button>
+        </div>
+    </div>
+
+
+{% endblock %}
