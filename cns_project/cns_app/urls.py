@@ -16,6 +16,10 @@ urlpatterns = [
     path('edit_production/<int:pk>', views.edit_production, name="edit_production"),
     path('update_production/<int:pk>', views.update_production, name="update_production"),
     path('delete_production/<int:pk>', views.delete_production, name="delete_production"),
+    path('dashboard_page/', views.dashboard, name="dashboard"),
+    path('view_final_goods/', views.view_final_goods, name="view_final_goods"),
+    path('add_final_goods/', views.add_final_good, name="add_final_goods"),
+
     path('login/', user_login, name='login'),
     path('logout/', user_logout, name='logout'),
     path('signup/', user_signup, name='signup'),

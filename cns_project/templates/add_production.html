@@ -1,15 +1,25 @@
 {% extends 'base.html '%}
 {% load bootstrap5 %}
-
+{{ form.media }}
+{% block title %}Add Production{% endblock %}
 {% block content %}
-    <div class="container">
-        <div class="jumbotron text-center">
-            <h1> please fill all details... </h1>
+    <div class="container form-group  mt-5" style="background-color: #d3bf8f; border: 2px solid black; border-radius: 10px;">
+        <div class="jumbotron  ">
+            <h1> Please fill details... </h1>
             <form action = "" method = "post" class="post-form">
                 {% csrf_token %}
-                {{ add_product.as_p }}
-                <input type="submit" value=Submit>
+                <label for="id_product_rst">Product RST:</label>
+                <input type="number" class="form-control" id="id_product_rst" name="product_rst" value="{{ form.product_rst.value|default_if_none:'' }}">
+
+                <label for="id_vehicle_no">Vehicle Number:</label>
+                <input type="text" class="form-control" id="id_vehicle_no" name="vehicle_no" value="{{ form.product_rst.value|default_if_none:'' }}">
+
+                <label for="id_production_nt_wt">Product Net Weight:</label>
+                <input type="number" class="form-control" id="id_production_nt_wt" name="product_net_weight" value="{{ form.product_rst.value|default_if_none:'' }}">
+
+                <br><button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
+
 {% endblock %}

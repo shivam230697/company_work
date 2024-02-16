@@ -1,5 +1,5 @@
 from django import forms
-from .models import RawMaterialModel, ProductionModel
+from .models import RawMaterialModel, ProductionModel, FinalGoods
 
 
 class IndexForm(forms.Form):
@@ -18,7 +18,16 @@ class ProductionForm(forms.ModelForm):
         model = ProductionModel
         fields = "__all__"
 
+    class Media:
+        js = ('js/auto_capitalize.js',)
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Username', max_length=100)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+
+class FinalGoodsForm(forms.ModelForm):
+    class Meta:
+        model = FinalGoods
+        fields = "__all__"

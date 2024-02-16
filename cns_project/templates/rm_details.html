@@ -1,59 +1,58 @@
 {% extends 'base.html '%}
+{% load static %}
 {% load bootstrap5 %}
+{% block title %}Detail Raw Material{% endblock %}
+
 {% block content %}
 
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                                <strong> Message! </strong> {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+<div class="container mt-4" >
+    <div class="table-responsive">
+        <table id="dataTable" class="display"  style="background-color: #4c3c3c; border: 2px solid black; border-radius: 10px;">
+            <thead>
+                <tr>
+                    <th>Sr no.</th>
+                    <th>RST</th>
+                    <th>Net Weight</th>
+                    <th>Rate</th>
+                    <th>total</th>
+                    <th scope="col">Created at </th>
+                    <th scope="col">Updated at </th>
+                    {% if user.is_superuser %}
+                    <th>Action</th>
+                    {% endif %}
+                    <!-- Add more table headers based on your model fields -->
+                </tr>
+            </thead>
 
+            <tbody >
+                {% for item in rm_data %}
+                    <tr style="background-color: #5f4c4c;">
+                        <td style="background-color: #5f4c4c;  ">{{ forloop.counter }}</td>
+                        <td>{{ item.rst_no }}</td>
+                        <td>{{ item.net_wt }}</td>
+                        <td>{{ item.rate }}</td>
+                        <td>{{ item.total }}</td>
+                        <td>{{item.created_at |date:"d-m-y H:i:s A"}}</td>
+                        <td>{{item.updated_at |date:"d-m-y H:i:s A"}}</td>
+                        {% if user.is_superuser %}
 
-    <div class="container">
-        <div class="jumbotron text-center">
-            <table class="table" id="dataTable">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">RST</th>
-                        <th scope="col">Net Weight</th>
-                        <th scope="col">Rate</th>
-                        <th scope="col">Total</th>
-                        <th scope="col">Action</th>
-
-
-                    </tr>
-                </thead>
-            {% for data in rm_data %}
-                <tbody>
-                    <tr>
-                        <th scope="row">{{data.pk}}</th>
-                        <td>{{data.rst_no}}</td>
-                        <td>{{data.net_wt}}</td>
-                        <td>{{data.rate}}</td>
-                        <td>{{data.total}}</td>
                         <td>
-                            <a href="{% url 'rm_update' data.id %}">
-                                <button type="button">Update</button>
-                            </a>
-                            <a href="{% url 'delete_rm_entry' data.id %}">
-                                <button type="button">Delete</button>
-                            </a>
+                                <a href="{% url 'rm_update' item.id %}">
+                                    <button type="button">Update</button>
+                                </a>
+                                <a href="{% url 'delete_rm_entry' item.id %}">
+                                    <button type="button">Delete</button>
+                                </a>
                         </td>
+                        {% endif %}
+                        <!-- Add more table data based on your model fields -->
                     </tr>
-
-                  </tbody>
                 {% endfor %}
-            </table>
-
-
-        </div>
+            </tbody>
+        </table>
     </div>
+
+</div>
 
 <!-- jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -68,12 +67,43 @@
 
 <script>
     $(document).ready(function() {
-        $('#dataTable').DataTable({
-            searching: true,  // Enable search functionality
-            ordering: true,   // Enable sorting
-            paging: true      // Enable pagination
+         //$('#dataTable').css('border', '1px solid #000');
+         //$('#dataTable th').css('border-right', '1px solid #000');
+         //$('#dataTable th').css('border-up', '1px solid #000');
+         //$('#dataTable th').css('border-left', '1px solid #000');
+         //$('#dataTable th').css('border-bottom', '1px solid #000');
+
+         // Add borders to all rows in the table with ID 'myTable'
+        //$('#dataTable tr').css('border-bottom', '1px solid #000');
+        //$('#dataTable tr').css('border-up', '1px solid #000');
+
+        // Add borders to all cells in the table with ID 'myTable'
+        //$('#dataTable td').css('border-right', '1px solid #000');
+        //$('#dataTable td').css('border-left', '1px solid #000');
+
+        var dataTable = $('#dataTable').DataTable({
+            searching: true,
+            paging: true,
+            ordering: true
+        });
+
+        // Enable individual column searching
+        $('#dataTable thead tr').clone(false).appendTo('#dataTable thead');
+        $('#dataTable thead tr:eq(1) th').each(function(i) {
+            var title = $(this).text();
+            $(this).html('<input type="text" placeholder="Search ' + title + '" />');
+
+            $('input', this).on('keyup change', function() {
+                if (dataTable.column(i).search() !== this.value) {
+                    dataTable
+                        .column(i)
+                        .search(this.value)
+                        .draw();
+                }
+            });
         });
     });
 </script>
+
 
 {% endblock %}

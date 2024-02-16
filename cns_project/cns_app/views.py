@@ -2,16 +2,17 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
-from .forms import IndexForm, RawMaterialForm, ProductionForm, LoginForm
-from .models import RawMaterialModel, ProductionModel
+from .forms import IndexForm, RawMaterialForm, ProductionForm, LoginForm, FinalGoodsForm
+from .models import RawMaterialModel, ProductionModel, FinalGoods
 from django.contrib import messages
+from datetime import datetime
 
 
 def index(request):
     index_form = IndexForm()
     rm_form = RawMaterialForm()
     data = RawMaterialModel.objects.all()
-    return render(request, "index.html", context={'form': index_form, 'rm_form': rm_form, 'data':data})
+    return render(request, "index.html", context={'form': index_form, 'rm_form': rm_form, 'data': data})
 
 
 def base(request):
@@ -37,6 +38,7 @@ def raw_material(request):
 
 def raw_material_view(request):
     rm_data = RawMaterialModel.objects.all()
+
     return render(request, "rm_details.html", context={'rm_data': rm_data})
 
 
@@ -69,6 +71,7 @@ def delete_raw_material_entry(request, pk):
 def add_production(request):
     add_product_form = ProductionForm()
     if request.method == 'POST':
+        print("eneterred view")
         product_form = ProductionForm(request.POST)
         if product_form.is_valid():
             product_rst = product_form.cleaned_data['product_rst']
@@ -76,7 +79,7 @@ def add_production(request):
             product_vehicle_no = product_form.cleaned_data['vehicle_no']
             product_model = ProductionModel()
             product_model.product_rst, product_model.product_net_weight, product_model.vehicle_no, = (
-                product_rst, product_net_wt, product_vehicle_no)
+                product_rst, product_net_wt, product_vehicle_no.upper())
             product_model.save()
         return render(request, "add_production.html", context={'add_product': ProductionForm()})
     if request.method == 'GET':
@@ -115,14 +118,18 @@ def delete_production(request, pk):
 
 
 def add_final_good(request):
-    return HttpResponse("add final good")
+    fg_form = FinalGoodsForm()
+    return render(request, "add_final_goods.html", {'fg_form': fg_form})
 
 
 def view_final_goods(request):
-    return HttpResponse("view final good")
+    view_fg_form = FinalGoodsForm()
+
+    return render(request, "view_final_goods.html", {'vfg_form': view_fg_form})
 
 
 def update_final_good(request):
+
     return HttpResponse("update final good")
 
 
@@ -171,3 +178,61 @@ def user_signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
+
+
+def dashboard(request):
+    if request.method == "POST":
+        button_name = request.POST.get('report_button', None)
+        print(button_name, type(button_name))
+        result = True if button_name == "show production report" else False
+        print(result)
+        if button_name == "show production report":
+            print(request)
+            start_date = request.POST.get('from_date', None)
+            last_date = request.POST.get('to_date', None)
+            print(type(start_date), start_date, "  ->  ", last_date)
+
+            p_data = ProductionModel.objects.raw(
+                "select * from cns_app_productionmodel where  DATE(created_at) between %s and %s", [start_date, last_date])
+
+            table_name = ProductionModel._meta.db_table
+
+            print(f"The table name for {ProductionModel.__name__} is: {table_name}")
+            print(list(p_data))
+            return render(
+                request,
+                'dashboard.html',
+                {
+                    'data': list(p_data),
+                    'btn_name': button_name,
+                    'from_date': start_date,
+                    'to_date': last_date
+                }
+            )
+        if button_name == "show raw material report":
+            print("Raw Material report")
+            print(request)
+            start_date = request.POST.get('from_date', None)
+            last_date = request.POST.get('to_date', None)
+            print(type(start_date), start_date, "  ->  ", last_date)
+            data = RawMaterialModel.objects.raw(
+                "select * from cns_app_rawmaterialmodel where "
+                " DATE(created_at) between %s and %s", [start_date, last_date])
+
+            table_name = RawMaterialModel._meta.db_table
+
+            print(f"The table name for {RawMaterialModel.__name__} is: {table_name}")
+            a = list(data)
+            return render(
+                request,
+                'dashboard.html',
+                {
+                    'data': list(data),
+                    'btn_name': button_name,
+                    'from_date': start_date,
+                    'to_date': last_date
+                }
+            )
+        print("nothing happend")
+
+    return render(request, 'dashboard.html', {'data': '', 'btn_name': "button_name"})

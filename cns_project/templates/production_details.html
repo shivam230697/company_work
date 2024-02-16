@@ -1,7 +1,9 @@
 {% extends 'base.html '%}
 {% load static %}
 {% load bootstrap5 %}
+{% block title %}Detail Production{% endblock %}
 {% block content %}
+
     <div class="container">
         <div class="jumbotron text-center">
             <table class="table" id="newt">
@@ -11,6 +13,8 @@
                         <th scope="col">Production RST</th>
                         <th scope="col">Production Net Weight</th>
                         <th scope="col">Vehicle Number</th>
+                        <th scope="col">Created at </th>
+                        <th scope="col">Updated at </th>
                         <th scope="col">Action</th>
                     </tr>
                 </thead>
@@ -19,9 +23,11 @@
                 <tbody>
                     <tr>
                         <th scope="row">{{data.pk}}</th>
-                        <td>{{data.product_rst}}</td>
+                        <td id="prst">{{data.product_rst}}</td>
                         <td>{{data.product_net_weight}}</td>
                         <td>{{data.vehicle_no}}</td>
+                        <td>{{data.created_at |date:"d-m-y H:i:s A"}}</td>
+                        <td>{{data.updated_at |date:"d-m-y H:i:s A"}}</td>
                         <td>
                             <a href="{% url 'edit_production' data.id %}">
                                 <button type="button">Edit</button>
@@ -36,9 +42,10 @@
                 {% endfor %}
             </table>
 
-            <button id="btn" onclick="myFunction()">Total net weight</button>
+            <button id="btn" >Total net weight</button>
         </div>
     </div>
+
 
 
 {% endblock %}
