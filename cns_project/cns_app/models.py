@@ -1,14 +1,17 @@
+from datetime import datetime
 import uuid
 
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.core.validators import EmailValidator, MaxLengthValidator, MinLengthValidator
+from address.models import AddressField
 import pytz
 
 
 # Create your models here.
 class RawMaterialModel(models.Model):
-    rst_no = models.IntegerField()
+    rst_no = models.IntegerField(unique=True)
     net_wt = models.IntegerField()
     rate = models.IntegerField()
     total = models.IntegerField()
@@ -30,8 +33,8 @@ class RawMaterialModel(models.Model):
 
 
 class ProductionModel(models.Model):
-    product_rst = models.IntegerField()
-    vehicle_no = models.CharField(max_length=10)
+    product_rst = models.IntegerField(unique=True)
+    vehicle_no = models.CharField(max_length=10, validators=[MaxLengthValidator(10),MinLengthValidator(10)])
     product_net_weight = models.IntegerField()
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -59,20 +62,70 @@ class UserProfile(models.Model):
         return self.user.username
 
 
-class FinalGoods(models.Model):
-    MY_CHOICES = (
-        ('option1', '45 mm'),
-        ('option2', '90 mm'),
-        ('option3', 'pencil'),
-    )
-    invoice_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    customer = models.CharField(max_length=50)
-    product_description = models.CharField(max_length=10, choices=MY_CHOICES)
-    quantity = models.IntegerField()
-    rate = models.DecimalField(max_digits=8, decimal_places=2)
+class Customer(models.Model):
+    from .environment import Environment
+    state_env = Environment
+    customer_name = models.CharField(max_length=20)
+    customer_number = models.PositiveIntegerField()
+    customer_address = models.CharField(max_length=100)
+    customer_state = models.CharField(max_length=20, choices=state_env.STATE_CHOICES)
+    customer_city = models.CharField(max_length=20)
+    zip_code = models.PositiveIntegerField()
+    payment_dues = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
+    payment_status = models.CharField(max_length=20, editable=False, choices=[('pending', 'PENDING'), ('paid', 'PAID')])
+
+    def __str__(self):
+        return self.customer_name
+
+
+class InvoiceModel(models.Model):
+    from .environment import Environment
+    fg_env = Environment()
+    invoice_id = models.CharField(max_length=20, editable=False, unique=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    item_45mm = models.BooleanField(default=False)
+    item_90mm = models.BooleanField(default=False)
+    item_pencil = models.BooleanField(default=False)
+    item_45mm_quantity = models.IntegerField()
+    item_pencil_quantity = models.IntegerField()
+    item_90mm_quantity = models.IntegerField()
+    item_45mm_rate = models.DecimalField(max_digits=8, decimal_places=2)
+    item_90mm_rate = models.DecimalField(max_digits=8, decimal_places=2)
+    item_pencil_rate = models.DecimalField(max_digits=8, decimal_places=2)
+    total_45mm = models.DecimalField(max_digits=8, decimal_places=2)
+    total_90mm = models.DecimalField(max_digits=8, decimal_places=2)
+    total_pencil = models.DecimalField(max_digits=8, decimal_places=2)
+    total = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
+    gst = models.IntegerField()
+    discount = models.IntegerField()
+    payment = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
+    shipping_address = models.CharField(max_length=50)
+    shipping_state = models.CharField(max_length=20, choices=fg_env.STATE_CHOICES)
+    shipping_city = models.CharField(max_length=20)
+    shipping_zip_code = models.PositiveIntegerField()
+
     # Other fields in your model
 
+    def __str__(self):
+        return self.invoice_id
+
     def save(self, *args, **kwargs):
+        print("enter save fn")
         if not self.invoice_id:
-            self.invoice_id = uuid.uuid4()
+            print("enter in not invoice id ")
+            current_datetime = datetime.now().strftime("%Y%m%d%H%M%S")
+            print(current_datetime)
+            unique_id = f"CNS_{current_datetime}"
+            self.invoice_id = unique_id
+            print(self.invoice_id)
         super().save(*args, **kwargs)
+
+
+class PaymentModel(models.Model):
+    payment_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    payment_method = models.CharField(max_length=20, choices=[('cash', 'cash'), ('online', 'online')])
+    payment_amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self):
+        return str(self.payment_id)

@@ -1,3 +1,5 @@
+
+/*
 $(document).ready(function(){
     $('#btn').text('total net weight');
     $( "#btn" ).click(function() {
@@ -8,8 +10,8 @@ $(document).ready(function(){
          });
         $('#btn').text('Value: ' + sum);
     });
-
 });
+*/
 
 
 // auto_capitalize.js

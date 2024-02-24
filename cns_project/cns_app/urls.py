@@ -17,8 +17,16 @@ urlpatterns = [
     path('update_production/<int:pk>', views.update_production, name="update_production"),
     path('delete_production/<int:pk>', views.delete_production, name="delete_production"),
     path('dashboard_page/', views.dashboard, name="dashboard"),
-    path('view_final_goods/', views.view_final_goods, name="view_final_goods"),
-    path('add_final_goods/', views.add_final_good, name="add_final_goods"),
+    path('view_invoices/', views.view_invoices, name="view_invoices"),
+    path('add_invoice/', views.add_invoice, name="add_invoice"),
+    path('my_page/', views.my_page, name="my_page"),
+    path('add_customer/', views.add_customer, name="add_customer"),
+    path('customer_list/', views.view_customer, name="check_customer"),
+    path('check_invoice/<int:invoice_id>', views.view_invoice, name="check_invoice"),
+    path('payment_history/<int:customer_id>', views.payment_history, name="payment_history"),
+
+    path('payment/', views.payment, name="payment"),
+    path('view_payment/', views.view_payment, name="view_payments"),
 
     path('login/', user_login, name='login'),
     path('logout/', user_logout, name='logout'),

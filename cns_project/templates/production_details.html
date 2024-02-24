@@ -5,24 +5,29 @@
 {% block content %}
 
     <div class="container">
-        <div class="jumbotron text-center">
-            <table class="table" id="newt">
+        <div class="jumbotron table-responsive text-center">
+            <input   class="search_input mt-5" style="float:left;" type="text" id="searchInput" placeholder="Search by RST...">
+            <table class="table" id="newt" >
                 <thead>
                     <tr>
-                        <th scope="col">#</th>
+                        <th scope="col">Sr No.</th>
                         <th scope="col">Production RST</th>
                         <th scope="col">Production Net Weight</th>
                         <th scope="col">Vehicle Number</th>
                         <th scope="col">Created at </th>
                         <th scope="col">Updated at </th>
                         <th scope="col">Action</th>
+
+
+
+
                     </tr>
                 </thead>
 
             {% for data in production_data %}
                 <tbody>
                     <tr>
-                        <th scope="row">{{data.pk}}</th>
+                        <th scope="row">{{ forloop.counter }} </th>
                         <td id="prst">{{data.product_rst}}</td>
                         <td>{{data.product_net_weight}}</td>
                         <td>{{data.vehicle_no}}</td>
@@ -42,10 +47,19 @@
                 {% endfor %}
             </table>
 
-            <button id="btn" >Total net weight</button>
+            <!--<button id="btn" >Total net weight</button>-->
         </div>
     </div>
 
-
+    <script>
+    $(document).ready(function(){
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#newt tbody tr").filter(function() {
+                $(this).toggle($(this).find("#prst").text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+</script>
 
 {% endblock %}

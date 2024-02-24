@@ -108,7 +108,7 @@
                     {% for obj in data %}
                     <tbody >
                         <tr>
-                            <th scope="row" class="text-light">{{obj.pk}}</th>
+                            <th scope="row" class="text-light">{{forloop.counter}}</th>
                             <td id="prst" class="text-light">{{obj.product_rst}}</td>
                             <td id="pntwt" class="text-light">{{obj.product_net_weight}}</td>
                             <td class="text-light">{{obj.vehicle_no}}</td>
@@ -136,7 +136,7 @@
                     {% for obj in data %}
                     <tbody>
                         <tr>
-                            <th scope="row" class="text-light">{{obj.pk}}</th>
+                            <th scope="row" class="text-light">{{forloop.counter}}</th>
                             <td id="rmrst" class="text-light">{{obj.rst_no}}</td>
                             <td id="rntwt" class="text-light">{{obj.net_wt}}</td>
                             <td id="raw_rate" class="text-light">{{obj.rate}}</td>

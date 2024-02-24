@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load bootstrap5 %}
+{% load static %}
+{% block title %} Detail Final Goods {% endblock %}
+{% block content %}
+
+    <div class="container mt-5">
+        <div class="table-responsive">
+            <input   class="search_input mt-5" style="float:left;" type="text" id="searchInput" placeholder="Search by Invoice ID...">
+
+            <table class="table text-nowrap" id="dataTable">
+                <thead>
+                    <tr>
+                        <th scope="row">Sr No.</th>
+                        <th>Invoice id</th>
+                        <th>Customer</th>
+                        <th>Item 45mm Quantity</th>
+                        <th>Item 45mm Rate</th>
+                        <th>Item 45mm total</th>
+                        <th>Item 90mm Quantity</th>
+                        <th>Item 90mm Rate</th>
+                        <th>Item 90mm total</th>
+                        <th>Item Pencil Quantity</th>
+                        <th>Item Pencil Rate</th>
+                        <th>Item Pencil total</th>
+
+                        <th>Total</th>
+                        <th>GST</th>
+                        <th>Discount</th>
+                        <th>Payment</th>
+                        {% if user.is_superuser %}
+                            <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for data in invoice_data %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td class="fg_invoice">{{data.invoice_id}}</td>
+                            <td>{{data.customer}}</td>
+                            <td>{{data.item_45mm_quantity}}</td>
+                            <td>{{data.item_45mm_rate}}</td>
+                            <td>{{data.total_45mm}}</td>
+                            <td>{{data.item_90mm_quantity}}</td>
+                            <td>{{data.item_90mm_rate}}</td>
+                            <td>{{data.total_90mm}}</td>
+                            <td>{{data.item_pencil_quantity}}</td>
+                            <td>{{data.item_pencil_rate}}</td>
+                            <td>{{data.total_pencil}}</td>
+                            <td>{{data.total}}</td>
+                            <td>{{data.gst}}%</td>
+                            <td>{{data.discount}}%</td>
+                            <td>{{data.payment}}</td>
+
+                            {% if user.is_superuser %}
+                                <td>
+                                    <a href="{% url 'check_invoice' data.id %}">
+                                        <button type="button">preview</button>
+                                    </a>
+                                    <a href="{% url 'delete_rm_entry' data.id %}">
+                                        <button type="button">delete</button>
+                                    </a>
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+
+<script>
+    $(document).ready(function(){
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#dataTable tbody tr").filter(function() {
+                $(this).toggle($(this).find(".fg_invoice").text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+</script>
+{% endblock %}

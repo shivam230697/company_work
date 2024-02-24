@@ -1,0 +1,78 @@
+{% extends 'base.html '%}
+{% load static %}
+{% load bootstrap5 %}
+{% block title %}Payments Details {% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="jumbotron table-responsive text-center">
+            <input   class="search_input mt-5" style="float:left;" type="text" id="searchInput" placeholder="Search by payment id...">
+            <table class="table" id="customer_list" >
+                <thead>
+                    <tr>
+                        <th scope="col">Sr No.</th>
+                        <th scope="col">Customer Name</th>
+                        <th scope="col">Customer Number</th>
+                        <th scope="col">Customer Address</th>
+                        <th scope="col">Customer State</th>
+                        <th scope="col">Customer City</th>
+                        <th scope="col">zip_code</th>
+                        <th scope="col">Dues</th>
+                        <th scope="col">Payment Status</th>
+
+<!--                        <th scope="col">payment_status</th>-->
+
+<!--                        <th scope="col">payment_dues</th>-->
+
+
+
+
+                    </tr>
+                </thead>
+
+            {% for data in customer_list %}
+                <tbody>
+                    <tr>
+                        <th scope="row">{{ forloop.counter }} </th>
+                        <td id="pay_id">{{data.customer_name}}</td>
+                        <td>{{data.customer_number}}</td>
+                        <td>{{data.customer_address}}</td>
+                        <td>{{data.customer_state}}</td>
+                        <td>{{data.customer_city}}</td>
+                        <td>{{data.zip_code}}</td>
+                        <td>{{data.payment_dues}}</td>
+                        <td>{{data.payment_status}}</td>
+
+                        <!--<td>{{data.payment_status}}</td>-->
+
+<!--                        <td>{{data.payment_dues}}</td>-->
+                        <!--<td>
+                            <a href="{% url 'edit_production' data.id %}">
+                                <button type="button">Edit</button>
+                            </a>
+                            <a href="{% url 'delete_production' data.id %}">
+                                <button type="button">Delete</button>
+                            </a>
+                        </td>-->
+                    </tr>
+
+                  </tbody>
+                {% endfor %}
+            </table>
+
+            <!--<button id="btn" >Total net weight</button>-->
+        </div>
+    </div>
+
+<script>
+    $(document).ready(function(){
+        $("#searchInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#customer_list tbody tr").filter(function() {
+                $(this).toggle($(this).find("#pay_id").text().toLowerCase().indexOf(value) > -1);
+            });
+        });
+    });
+</script>
+
+{% endblock %}
