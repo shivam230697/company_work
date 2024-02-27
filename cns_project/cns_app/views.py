@@ -42,7 +42,10 @@ def raw_material(request):
             rm_model.save()
             messages.success(request, "Successfully Added Raw Material")
         else:
-            messages.error(request, "Raw Material Form is not submitted")
+            for errors in rm_form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+            print(rm_form.errors)
         return render(request, "raw_material.html", context={'raw_material_form': RawMaterialForm()})
     if request.method == 'GET':
         return render(request, "raw_material.html", context={'raw_material_form': rm_form})
@@ -89,7 +92,10 @@ def confirm(request, pk):
 def delete_raw_material_entry(request, pk):
     try:
         remove_data = RawMaterialModel.objects.get(id=str(pk))
+        deleted_rst = remove_data.rst_no
         remove_data.delete()
+        messages.success(request, str(deleted_rst) + " Data Deleted Successfully")
+
     except Exception as error:
         messages.error(request, error)
     rm_data = RawMaterialModel.objects.all()
@@ -105,14 +111,17 @@ def add_production(request):
         if product_form.is_valid():
             product_rst = product_form.cleaned_data['product_rst']
             product_net_wt = product_form.cleaned_data['product_net_weight']
-            product_vehicle_no = product_form.cleaned_data['vehicle_no']
+            product_vehicle_no = product_form.cleaned_data['vehicle_no'] or 'UNKNOWN'
             product_model = ProductionModel()
             product_model.product_rst, product_model.product_net_weight, product_model.vehicle_no, = (
                 product_rst, product_net_wt, product_vehicle_no.upper())
             product_model.save()
             messages.success(request, "Production added successfully")
         else:
-            messages.error(request, "Pruction Form not submitted successfully")
+            for errors in product_form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+                print(product_form.errors)
             return render(request, "add_production.html", context={'add_product': ProductionForm()})
     if request.method == 'GET':
         return render(request, "add_production.html", context={'add_product': add_product_form})
@@ -157,7 +166,7 @@ def delete_production(request, pk):
         remove_data = ProductionModel.objects.get(id=str(pk))
         deleted_rst = remove_data.product_rst
         remove_data.delete()
-        messages.success(request, str(deleted_rst) + " Data Deleted Successfully" )
+        messages.success(request, str(deleted_rst) + " Data Deleted Successfully")
     except Exception as error:
         messages.error(request, error)
     production_data = ProductionModel.objects.all()
@@ -195,18 +204,26 @@ def add_invoice(request):
             invoice_model.shipping_zip_code = invoice_form.cleaned_data['shipping_zip_code']
             invoice_model.total = invoice_form.cleaned_data['total']
             invoice_model.gst = invoice_form.cleaned_data['gst']
-            invoice_model.discount = invoice_form.cleaned_data['discount']
+            invoice_model.discount = invoice_form.cleaned_data['discount'] or 0
             invoice_model.payment = invoice_form.cleaned_data['payment']
+            invoice_model.driver_name = invoice_form.cleaned_data['driver_name']
+            invoice_model.driver_number = invoice_form.cleaned_data['driver_number']
+            invoice_model.assigned_vehicle = invoice_form.cleaned_data['assigned_vehicle']
+            invoice_model.paid_amount = invoice_form.cleaned_data['paid_amount']
+            if invoice_model.paid_amount > invoice_model.payment:
+                messages.error(request, 'Enter valid paid amount')
+                return render(request, "add_invoice.html", {'invoice_form': InvoiceForm()})
 
             customer_model = Customer.objects.get(pk=invoice_form.cleaned_data['customer'].id)
 
-            customer_model.payment_dues = customer_model.payment_dues + invoice_form.cleaned_data['payment']
+            customer_model.payment_dues = (customer_model.payment_dues +
+                                           invoice_form.cleaned_data['payment'] - invoice_model.paid_amount)
             customer_model.payment_status = 'PENDING'
             customer_model.save()
             invoice_model.save()
             messages.success(request, "Invoice Added Successfully")
         else:
-            messages.error(request, "Invoice Form is not submitted")
+            messages.error(request, invoice_form.errors)
 
         return render(request, "add_invoice.html", context={'invoice_form': InvoiceForm()})
     return render(request, "add_invoice.html", {'invoice_form': InvoiceForm()})
@@ -238,8 +255,7 @@ def user_login(request):
             login(request, user)
             return redirect('dashboard')
         else:
-            # Handle invalid login
-            pass
+            messages.error(request, "Invalid user")
     form = LoginForm()
     return render(request, 'login.html', {'form': form})
 
@@ -334,11 +350,15 @@ def add_customer(request):
             customer_model.customer_state = customer_form.cleaned_data['customer_state']
             customer_model.customer_city = customer_form.cleaned_data['customer_city']
             customer_model.zip_code = customer_form.cleaned_data['zip_code']
+            customer_model.customer_gstin = customer_form.cleaned_data['customer_gstin'].upper()
 
             customer_model.payment_dues = 0
             customer_model.payment_status = 'PAID'
             customer_model.save()
-            return redirect('/add_invoice/')
+            messages.success(request, 'Successfully Customer added')
+        else:
+            messages.error(request, 'Customer Form is not submitted')
+        return render(request, 'add_customer.html', {'customer_form': CustomerForm()})
 
     if request.method == "GET":
         return render(request, 'add_customer.html', {'customer_form': CustomerForm()})

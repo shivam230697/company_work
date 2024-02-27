@@ -5,7 +5,7 @@
 {% block content %}
   <div class="container-fluid">
     <div class="jumbotron form-group">
-
+      {% include 'message.html'%}
       <form method="post" action="{% url 'login' %}" class="post-form">
         {% csrf_token %}
         <div class=" container form-group mt-5 " style="background-color: grey; border: 2px solid black; border-radius: 10px;">

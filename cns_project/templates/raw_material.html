@@ -5,26 +5,37 @@
 {% block content %}
 
     <div class="container form-group  mt-5" >
-        <div class="jumbotron  ">
+        <div class="jumbotron">
             {% include 'message.html' %}
             <h1>  Raw Material </h1>
             <form action = "" method = "post" class="post-form">
                 {% csrf_token %}
                 <label for="raw_material_rst">Raw Material RST:</label>
-                <input type="number" class="form-control" id="raw_material_rst" name="rst_no" value="{{ form.rst_no.value|default_if_none:'' }}">
+                <input type="number" class="form-control" id="raw_material_rst" name="rst_no" value="{{ form.rst_no.value|default_if_none:'' }}" placeholder="required positive Integer only" required>
 
-                <label for="raw_material_rate">Raw Material Rate:</label>
-                <input type="number" class="form-control" id="raw_material_rate" name="rate" value="{{ form.net_wt.value|default_if_none:'' }}">
+                <label for="raw_material_rate">Raw Material Rate(Rs):</label>
+                <input type="{{raw_material_form.rate.input_type}}" class="form-control" id="raw_material_rate" name="rate" value="{{ form.net_wt.value|default_if_none:'' }}" placeholder="required field " required>
 
                 <label for="raw_material_net_wt">Raw Material Net Weight:</label>
-                <input type="number" class="form-control" id="raw_material_net_wt" name="net_wt" value="{{ form.rate.value|default_if_none:'' }}">
+                <input type="{{ raw_material_form.net_wt.widget.input_type }}" class="form-control" id="raw_material_net_wt" name="net_wt" value="{{ form.rate.value|default_if_none:'' }}" placeholder="required field / [weight in Kg only]" required>
 
                 <label for="raw_material_total">Raw Material Total:</label>
-                <input type="number" class="form-control" id="raw_material_total" name="total" value="{{ form.total.value|default_if_none:'' }}">
+                <input type="number" class="form-control" id="raw_material_total" name="total" value="{{ form.total.value|default_if_none:'' }}" readonly>
 
                 <br><button type="submit" class="btn btn-primary">Submit</button>
             </form>
         </div>
     </div>
 
+<script>
+    $(document).ready(function () {
+
+        $("#raw_material_net_wt, #raw_material_rate").on("input", function () {
+        var raw_weight = parseFloat($("#raw_material_net_wt").val()) || 0;
+        var raw_price = parseFloat($("#raw_material_rate").val()) || 0;
+        var raw_total = (raw_weight/1000) * raw_price;
+        $('#raw_material_total').val(raw_total.toFixed(2));
+    });
+    });
+</script>
 {% endblock %}

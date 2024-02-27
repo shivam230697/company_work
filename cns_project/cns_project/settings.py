@@ -142,3 +142,4 @@ LOGOUT_URL = 'logout'
 
 # Redirect to home URL after login
 LOGIN_REDIRECT_URL = '/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True

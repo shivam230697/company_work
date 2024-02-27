@@ -12,9 +12,9 @@ import pytz
 # Create your models here.
 class RawMaterialModel(models.Model):
     rst_no = models.IntegerField(unique=True)
-    net_wt = models.IntegerField()
-    rate = models.IntegerField()
-    total = models.IntegerField()
+    net_wt = models.DecimalField(max_digits=12, decimal_places=2)
+    rate = models.DecimalField(max_digits=12, decimal_places=2)
+    total = models.DecimalField(max_digits=12, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -34,8 +34,8 @@ class RawMaterialModel(models.Model):
 
 class ProductionModel(models.Model):
     product_rst = models.IntegerField(unique=True)
-    vehicle_no = models.CharField(max_length=10, validators=[MaxLengthValidator(10),MinLengthValidator(10)])
-    product_net_weight = models.IntegerField()
+    vehicle_no = models.CharField(blank=True, null=True, max_length=10,  default="UNKNOWN")
+    product_net_weight = models.DecimalField(max_digits=12, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -70,12 +70,28 @@ class Customer(models.Model):
     customer_address = models.CharField(max_length=100)
     customer_state = models.CharField(max_length=20, choices=state_env.STATE_CHOICES)
     customer_city = models.CharField(max_length=20)
+    customer_gstin = models.CharField(max_length=20)
     zip_code = models.PositiveIntegerField()
     payment_dues = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
     payment_status = models.CharField(max_length=20, editable=False, choices=[('pending', 'PENDING'), ('paid', 'PAID')])
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.customer_name
+
+    @property
+    def created_at_local(self):
+        # Convert UTC time to local time
+        local_tz = timezone.get_current_timezone()
+        return self.created_at.astimezone(local_tz)
+
+    def save(self, *args, **kwargs):
+        self.customer_name = self.customer_name.upper()
+        self.customer_city = self.customer_city.upper()
+
+        # Call the original save method
+        super().save(*args, **kwargs)
 
 
 class InvoiceModel(models.Model):
@@ -97,12 +113,17 @@ class InvoiceModel(models.Model):
     total_pencil = models.DecimalField(max_digits=8, decimal_places=2)
     total = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
     gst = models.IntegerField()
-    discount = models.IntegerField()
+    discount = models.IntegerField(default=0, blank=True, null=True)
     payment = models.DecimalField(null=True, max_digits=12, editable=False, decimal_places=2)
     shipping_address = models.CharField(max_length=50)
     shipping_state = models.CharField(max_length=20, choices=fg_env.STATE_CHOICES)
     shipping_city = models.CharField(max_length=20)
     shipping_zip_code = models.PositiveIntegerField()
+    driver_name = models.CharField(max_length=20, blank=True, default="UNKNOWN")
+    driver_number = models.PositiveIntegerField(default=1234567890)
+    assigned_vehicle = models.CharField(max_length=10, blank=True, default="UNKNOWN")
+    paid_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    invoice_date = models.DateTimeField(auto_now_add=True)
 
     # Other fields in your model
 
@@ -126,6 +147,15 @@ class PaymentModel(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     payment_method = models.CharField(max_length=20, choices=[('cash', 'cash'), ('online', 'online')])
     payment_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return str(self.payment_id)
+
+    # Other fields for your model
+    @property
+    def created_at_local(self):
+        # Convert UTC time to local time
+        local_tz = timezone.get_current_timezone()
+        return self.created_at.astimezone(local_tz)

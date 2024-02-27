@@ -4,6 +4,7 @@ from django import forms
 from .models import RawMaterialModel, ProductionModel, InvoiceModel, Customer, PaymentModel
 from address.forms import AddressField
 from localflavor.in_.forms import INStateSelect
+from django.core.validators import MinValueValidator, MinLengthValidator, MaxLengthValidator
 
 
 class IndexForm(forms.Form):
@@ -12,12 +13,25 @@ class IndexForm(forms.Form):
 
 
 class RawMaterialForm(forms.ModelForm):
+    rst_no = forms.IntegerField(min_value=0, required=True, error_messages={'required': 'RST is required field'})
+    net_wt = forms.DecimalField(required=True, decimal_places=2,
+                                error_messages={'required': 'Weight is required field'})
+    rate = forms.DecimalField(
+        required=True, decimal_places=2,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'required field'}),
+        error_messages={'required': 'Rate is required field'}
+    )
+
     class Meta:
         model = RawMaterialModel
         fields = "__all__"
 
 
 class ProductionForm(forms.ModelForm):
+    product_rst = forms.IntegerField(required=True, error_messages={'required': 'RST Field is required'})
+    vehicle_no = forms.CharField(required=False, max_length=10)
+    product_net_weight = forms.DecimalField(decimal_places=2, error_messages={'required': 'Weight Field is required'})
+
     class Meta:
         model = ProductionModel
         fields = "__all__"
@@ -34,18 +48,18 @@ class LoginForm(forms.Form):
 class InvoiceForm(forms.Form):
     from .environment import Environment
     invoice_env = Environment()
-    customer = forms.ModelChoiceField(queryset=Customer.objects.all())
+    customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=True)
 
     total = forms.DecimalField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     gst = forms.IntegerField()
-    discount = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}))
+    discount = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False, initial=0)
     payment = forms.DecimalField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     item45mm = forms.BooleanField(label='Item 1', required=False,
-                               widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+                                  widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     item90mm = forms.BooleanField(label='Item 2', required=False,
-                               widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+                                  widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     item_pencil = forms.BooleanField(label='Item 3', required=False,
-                               widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+                                     widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
     quantity_item1 = forms.IntegerField(label='Quantity for Item 1', required=False,
                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
@@ -65,6 +79,10 @@ class InvoiceForm(forms.Form):
     shipping_state = forms.ChoiceField(choices=invoice_env.STATE_CHOICES, label="Shipping State")
     shipping_city = forms.CharField(max_length=20)
     shipping_zip_code = forms.IntegerField()
+    driver_name = forms.CharField(max_length=20, initial='UNKNOWN', required=True)
+    driver_number = forms.IntegerField(initial=1234567890, required=True)
+    assigned_vehicle = forms.CharField(max_length=10, initial='UNKNOWN', required=True)
+    paid_amount = forms.DecimalField(max_digits=12, decimal_places=2, initial=0, required=True)
 
 
 class CustomerForm(forms.Form):
@@ -76,6 +94,7 @@ class CustomerForm(forms.Form):
     customer_state = forms.ChoiceField(choices=state_env.STATE_CHOICES)
     customer_city = forms.CharField(max_length=20)
     zip_code = forms.IntegerField(label='ZIP Code')
+    customer_gstin = forms.CharField(max_length=20, required=True)
     # payment_status = forms.ChoiceField(choices=[('pending', 'PENDING'), ('paid', 'PAID')])
     # payment_dues = forms.DecimalField()
 

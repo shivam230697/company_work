@@ -18,6 +18,7 @@
 
     <div class="container-fluid">
     <div class="jumbotron form-group">
+        {% include 'message.html'%}
       <form method="post" action="{% url 'signup' %}" class="post-form">
         {% csrf_token %}
         <div class=" container form-group mt-5 " style=" border: 2px solid black; border-radius: 10px;">

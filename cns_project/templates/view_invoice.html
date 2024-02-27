@@ -19,7 +19,7 @@
 </head>
 <body class="base_body" >
     {% if messages %}
-        <div class="container mt-3">
+        <div class="container mt-5">
             {% for message in messages %}
               <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                 {{ message }}
@@ -31,46 +31,70 @@
         <button class="btn btn-primary mx-2 my-2"  id="printButton">Print</button>
         <a href="{% url 'view_invoices' %}" class="btn btn-primary mx-2 my-2" id="back_btn"
            style="float:right;" role="button">Back</a>
-        <div class="container text-center w-75 invoice-container" style="background-color:white;">
+        <div class="container border border-5 mt-5 text-center w-100 invoice-container" style="background-color:white;">
             <div class="row">
-                <div class="col fs-1 display-5 text-center">Chaudhary Girraj & Sons</div>
-                <div >Manufacturing Biomass Briquettes</div>
-                <div>Shivpuri-Kota Highway, Mamoni (Rajasthan)</div>
+                <div class="col-md-8">
+                <div class="col fs-1 display-5 text-start mt-3"><b>Chaudhary Girraj & Sons</b></div>
+                <div class="text-start">Manufacturing Biomass Briquettes</div>
+                <div class="text-start">Shivpuri-Kota Highway, Mamoni (Rajasthan)</div>
+                <div class="text-start">Phone: +91 9425126230, 9827672604</div>
+                <div class=" text-start">Date: {{invoice.invoice_date |date:"d-m-Y" |safe}}</div>
+                </div>
+                <div class="col-md-4 text-end mt-2 ">
+                    <img class="  img-thumbnail" src="{% static 'images/logo.jpeg'%}" style="width:150px; height:150px; border:0px solid black; border-radius:30px;">
+                </div>
             </div>
             <div class="row">
-                <div class="display-5 col text-center">TAX INVOICE</div>
+                <div class="fs-4 col text-center">TAX INVOICE</div>
             </div>
             <div class="row mx-1">
-                <div class="col-6 text-start">Date: 2024/12/02</div>
+                <div class="col-6 text-start">Invoice Id: {{invoice.invoice_id |safe}}</div>
+                <!--<div class="col-6 text-start">Date: {{invoice.invoice_date |date:"d-m-y" |safe}}</div>-->
                 <div class="col-6 text-end">GSTIN: 22AAAAA0000A1Z5</div>
             </div>
-            <div class="row mx-1" style="border:1px black solid;">
-                <div class="col-6 text-start" style="border:1px black solid;">Customer Details:
-                    <address>
-                        Name: {{customer.customer_name}}<br>
-                        Address: {{customer.customer_address}}<br>
-                        Number: {{customer.customer_number}}<br>
-                        State: {{customer.customer_state}}<br>
-                        Zip Code: {{customer.zip_code}}
-                    </address>
+            <div class="row mx-1" style="border:1px black solid; font-size:12px;" >
+                <div class="col-6 text-start" style="border:1px black solid;"><u><span class="text-center fs-6">Customer Details:</span></u>
+                    <dl class="row">
+                        <dt class="col-md-2">Name:</dt>
+                        <dd class="col-md-10">{{customer.customer_name|safe}}</dd>
+                        <dt class="col-md-2">GSTIN:</dt>
+                        <dd class="col-md-10">{{customer.customer_gstin|safe}}</dd>
+                        <dt class="col-md-2">Address:</dt>
+                        <dd class="col-md-10">{{customer.customer_address}}, {{customer.customer_state}},  {{customer.zip_code}}</dd>
+
+                        <dt class="col-md-2">Number:</dt>
+                        <dd class="col-md-10">{{customer.customer_number}}</dd>
+
+                    </dl>
+
                 </div>
                 <div class="col-6 text-start" style="border:1px black solid;">
 
-                    <div class="row-6">Invoice Details:
-                        <address>
-                            Invoice Id: {{invoice.invoice_id}}<br>
+                    <!--<div class="row">
+                        <dl class="row">
+                            <dt class="col-md-2">
+                                <b>INVOICE ID: </b>
+                            </dt>
+                            <dd class="col-md-10">{{invoice.invoice_id}}<br></dd>
+                        </dl>
+
+                    </div>-->
+                        <div class="col">
+                            <span class="fs-6"><u>Shipping Details:</u></span>
+                            <dl class="row">
+                                <dt class="col-md-5"><b>Address:</b></dt>
+                                <dd class="col-md-7">{{invoice.shipping_address}}, {{invoice.shipping_city}},  {{invoice.shipping_state}}, {{invoice.shipping_zip_code}}<br></dd>
+
+                                <dt class="col-md-5"><b>Driver Name:</b></dt>
+                                <dd class="col-md-7">{{invoice.driver_name}}<br></dd>
+                                <dt class="col-md-5"><b>Driver Number:</b></dt>
+                                <dd class="col-md-7">{{invoice.driver_number}}<br></dd>
+                                <dt class="col-md-5"><b>Vehicle Number:</b></dt>
+                                <dd class="col-md-7">{{invoice.assigned_vehicle}}<br></dd>
+                            </dl>
+                        </div>
 
 
-                        </address>
-                    </div>
-                    <div class="row-6">Shipping Details:
-                        <address>Shipping Address: {{invoice.shipping_address}}<br>
-                            Shipping State: {{invoice.shipping_state}}<br>
-                            Shipping City: {{invoice.shipping_city}}<br>
-                            Shipping Zip Code: {{invoice.shipping_zip_code}}
-
-                        </address>
-                    </div>
                 </div>
 
             </div>
@@ -86,7 +110,7 @@
 
                 </div>
             </div>-->
-            <div class="row mt-4">
+            <div class="row mt-2">
                 <div class="col">
                     <table class="table">
                         <thead>
@@ -105,25 +129,25 @@
                                 <th scope="row">1</th>
                                     <td>Item 45mm</td>
                                     <td>2</td>
-                                    <td>{{invoice.item_45mm_quantity}} pcs</td>
-                                    <td>{{invoice.item_45mm_rate}}</td>
-                                    <td>{{invoice.total_45mm}} </td>
+                                    <td>{{invoice.item_45mm_quantity}} Kg</td>
+                                    <td>{{invoice.item_45mm_rate}} Rs</td>
+                                    <td>{{invoice.total_45mm}} Rs</td>
                             </tr>
                             <tr>
                                 <th scope="row">2</th>
                                     <td>Item 90mm</td>
                                     <td>2</td>
-                                    <td>{{invoice.item_90mm_quantity}} pcs</td>
-                                    <td>{{invoice.item_90mm_rate}}</td>
-                                    <td>{{invoice.total_90mm}} </td>
+                                    <td>{{invoice.item_90mm_quantity}} Kg</td>
+                                    <td>{{invoice.item_90mm_rate}} Rs</td>
+                                    <td>{{invoice.total_90mm}} Rs</td>
                             </tr>
                             <tr>
                                 <th scope="row">3</th>
                                     <td>Item Pencil</td>
                                     <td>2</td>
-                                    <td>{{invoice.item_pencil_quantity}} pcs</td>
-                                    <td>{{invoice.item_pencil_rate}}</td>
-                                    <td>{{invoice.total_pencil}} </td>
+                                    <td>{{invoice.item_pencil_quantity}} Kg</td>
+                                    <td>{{invoice.item_pencil_rate}} Rs</td>
+                                    <td>{{invoice.total_pencil}} Rs</td>
                             </tr>
 
                     <!-- Add more rows for additional products -->
@@ -132,7 +156,7 @@
 
                 </div>
             </div>
-            <div class="row">
+            <div class="row" style="font-size:12px;">
                 <div class="col-6 text-start">
 
                     <dl class="row">
@@ -146,12 +170,8 @@
                         <dd class="col-6">{{invoice.payment}} Rs</dd>
                     </dl>
                 </div>
-
-                <hr>
-
-            <div class="row">
                 <div class="col-6 text-start">
-                    <h5>Payment Details:</h5>
+                    <h6>Payment Details:</h6>
                     <dl class="row">
                         <dt class="col-6">BANK NAME</dt>
                         <dd class="col-6">HDFC</dd>
@@ -161,8 +181,12 @@
                         <dd class="col-6">HDFC000023</dd>
                     </dl>
                 </div>
+                <hr>
 
-                <div class="col-6 text-start">
+            <div class="row">
+
+
+                <div class="col text-start">
                     <h5>Terms and Conditions:</h5>
                     <ol>
                         <li>Our responsibility ceases as soon as goods leave our premises</li>

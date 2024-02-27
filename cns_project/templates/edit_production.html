@@ -4,7 +4,7 @@
 {% block content %}
     <div class="container">
         <div class="jumbotron text-center">
-
+            {% include 'message.html'%}
             <form action="" method = "post" class="post-form">
                 {% csrf_token %}
                 <label for="PRODUCTION RST NUMBER">RST NUMBER:</label><br> <input name="product_rst" type="text"  value="{{data.product_rst}}"><br><br>

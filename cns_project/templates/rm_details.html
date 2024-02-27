@@ -6,6 +6,7 @@
 {% block content %}
 
 <div class="container mt-4" >
+    {% include 'message.html'%}
     <div class="table-responsive">
         <input class="search_input mt-5" style="float:left;" type="text" id="searchInput" placeholder="Search by RST...">
 
@@ -30,10 +31,10 @@
                 {% for item in rm_data %}
                     <tr style="">
                         <td style="  ">{{ forloop.counter }}</td>
-                        <td id="raw_rst">{{ item.rst_no }}</td>
-                        <td>{{ item.net_wt }}</td>
-                        <td>{{ item.rate }}</td>
-                        <td>{{ item.total }}</td>
+                        <td id="raw_rst">{{ item.rst_no |safe }}</td>
+                        <td>{{ item.net_wt|safe}} Kg</td>
+                        <td>{{ item.rate }} Rs</td>
+                        <td>{{ item.total }} Rs</td>
                         <td>{{item.created_at |date:"d-m-y H:i:s A"}}</td>
                         <td>{{item.updated_at |date:"d-m-y H:i:s A"}}</td>
                         {% if user.is_superuser %}
