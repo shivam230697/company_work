@@ -58,8 +58,8 @@
 
                             {% if user.is_authenticated %}
                                 <td>
-                                    <a href="{% url 'check_invoice' data.id %}">
-                                        <button type="button">preview</button>
+                                    <a  class="" title="view invoice" href="{% url 'check_invoice' data.id %}">
+                                       <i class="bi bi-file-earmark-fill"></i>
                                     </a>
                                     <!--<a href="{% url 'delete_rm_entry' data.id %}">
                                         <button type="button">delete</button>

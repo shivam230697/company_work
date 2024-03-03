@@ -30,11 +30,11 @@
                     </div>
                     <div class="col-4 text-center">
                         <label for="id_quantity_item1">quantity 45mm:</label>
-                        <input type="number" class="" id="id_quantity_item1" name="quantity_item1" value="{{ form.quantity_item1.value|default_if_none:'' }}" >
+                        <input type="{{invoice_form.quantity_item1.input_type}}" class="" id="id_quantity_item1" name="quantity_item1" value="{{ form.quantity_item1.value|default_if_none:'' }}" >
                     </div>
                     <div class="col-4 text-end">
                             Rate 45mm:
-                            <input type="number" class="" id="id_price_item1" name="price_item1" value="{{ form.price_item1.value|default_if_none:'' }}" >
+                            <input type="{{invoice_form.price_item1.input_type}}" class="" id="id_price_item1" name="price_item1" value="{{ form.price_item1.value|default_if_none:'' }}" >
                     </div>
                 </div>
                 <div class="row item90mm mt-2">
@@ -44,11 +44,11 @@
                     </div>
                     <div class="col-4 text-center">
                         <label for="id_quantity_item2">quantity 90mm:</label>
-                        <input type="number" class="" id="id_quantity_item2" name="quantity_item2" value="{{ form.quantity_item2.value|default_if_none:'' }}">
+                        <input type="{{invoice_form.quantity_item2.input_type}}" class="" id="id_quantity_item2" name="quantity_item2" value="{{ form.quantity_item2.value|default_if_none:'' }}">
                     </div>
                     <div class="col-4 text-end">
                         <label for="id_price_item2">Rate 90mm:</label>
-                        <input type="number" class="" id="id_price_item2" name="price_item2" value="{{ form.price_item2.value|default_if_none:'' }}">
+                        <input type="{{invoice_form.price_item2.input_type}}" class="" id="id_price_item2" name="price_item2" value="{{ form.price_item2.value|default_if_none:'' }}">
                     </div>
                 </div>
 
@@ -59,32 +59,32 @@
                     </div>
                     <div class="col-4 text-center">
                         <label for="id_quantity_item3">quantity pencil:</label>
-                        <input type="number" class="" id="id_quantity_item3" name="quantity_item3" value="{{ form.quantity_item3.value|default_if_none:'' }}">
+                        <input type="{{invoice_form.quantity_item3.input_type}}" class="" id="id_quantity_item3" name="quantity_item3" value="{{ form.quantity_item3.value|default_if_none:'' }}">
                     </div>
                     <div class="col-4 text-end">
                         <label for="id_price_item3">Rate pencil:</label>
-                        <input type="number" class="" id="id_price_item3" name="price_item3" value="{{ form.price_item3.value|default_if_none:'' }}">
+                        <input type="{{invoice_form.price_item3.input_type}}" class="" id="id_price_item3" name="price_item3" value="{{ form.price_item3.value|default_if_none:'' }}">
                     </div>
                 </div>
                 <label for="total_id">Total:</label>
-                <input type="number" class="form-control" id="total_id" name="total" value="{{ form.total.value|default_if_none:'' }}" readonly>
+                <input type="{{invoice_form.total.input_type}}" class="form-control" id="total_id" name="total" value="{{ form.total.value|default_if_none:'' }}" readonly>
 
                 <div class="row">
                     <div class="col-md-6">
                         <label for="id_gst">GST %:</label>
-                        <input type="number" class="form-control" id="id_gst" name="gst" value="{{ form.gst.value|default_if_none:'' }}" required>
+                        <input type="{{invoice_form.gst.input_type}}" class="form-control" id="id_gst" name="gst" value="{{ form.gst.value|default_if_none:'' }}" required>
 
                     </div>
                     <div class="col-md-6">
                         <label for="id_discount">Discount %:</label>
-                        <input type="number" class="form-control" id="id_discount" name="discount" value="{{ form.discount.value|default_if_none:'' }}" >
+                        <input type="{{invoice_form.discount.input_type}}" class="form-control" id="id_discount" name="discount" value="{{ form.discount.value|default_if_none:'' }}" >
                     </div>
                 </div>
 
 
 
                 <label for="payment_id">Payment:</label>
-                <input type="text" name="payment" id="payment_id" class="form-control" placeholder="amount to be paid" readonly>
+                <input type="{{invoice_form.payment.input_type}}" name="payment" id="payment_id" class="form-control" placeholder="amount to be paid" readonly>
 
                 <label for="id_shipping_address">Shipping Address:</label>
                 <input type="text" class="form-control" id="id_shipping_address" name="shipping_address" value="{{ form.shipping_address.value|default_if_none:'' }}" required>
@@ -104,7 +104,7 @@
                 <input type="text" class="form-control" id="id_shipping_zip_code" name="shipping_zip_code" value="{{ form.shipping_zip_code.value|default_if_none:'' }}" required>
 
                 <label for="id_paid_amount">Paid Amount:</label>
-                <input type="number" class="form-control" id="id_paid_amount" name="paid_amount" value="{{ form.paid_amount.value|default_if_none:'' }}" >
+                <input type="{{invoice_form.paid_amount.input_type}}" class="form-control" id="id_paid_amount" name="paid_amount" value="{{ form.paid_amount.value|default_if_none:'' }}" >
 
                 <label for="id_driver_name">Driver Name:</label>
                 <input type="text" class="form-control" id="id_driver_name" name="driver_name" value="{{ form.driver_name.value|default_if_none:'' }}" required>
@@ -131,27 +131,27 @@ $(document).ready(function () {
 
     function updateTotal() {
         total = total1 + total2 + total3;
-        $('#total_id').val(total);
+        $('#total_id').val(total.toFixed(2));
     }
 
     function updateTotal1() {
         var quantity = parseFloat($("#id_quantity_item1").val()) || 0;
         var price = parseFloat($("#id_price_item1").val()) || 0;
-        total1 = quantity * price;
+        total1 = quantity/1000 * price;
         updateTotal();
     }
 
     function updateTotal2() {
         var quantity = parseFloat($("#id_quantity_item2").val()) || 0;
         var price = parseFloat($("#id_price_item2").val()) || 0;
-        total2 = quantity * price;
+        total2 = quantity/1000 * price;
         updateTotal();
     }
 
     function updateTotal3() {
         var quantity = parseFloat($("#id_quantity_item3").val()) || 0;
         var price = parseFloat($("#id_price_item3").val()) || 0;
-        total3 = quantity * price;
+        total3 = quantity/1000 * price;
         updateTotal();
     }
 

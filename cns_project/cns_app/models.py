@@ -102,9 +102,9 @@ class InvoiceModel(models.Model):
     item_45mm = models.BooleanField(default=False)
     item_90mm = models.BooleanField(default=False)
     item_pencil = models.BooleanField(default=False)
-    item_45mm_quantity = models.IntegerField()
-    item_pencil_quantity = models.IntegerField()
-    item_90mm_quantity = models.IntegerField()
+    item_45mm_quantity = models.DecimalField(decimal_places=2, max_digits=12)
+    item_pencil_quantity = models.DecimalField(decimal_places=2, max_digits=12)
+    item_90mm_quantity = models.DecimalField(decimal_places=2, max_digits=12)
     item_45mm_rate = models.DecimalField(max_digits=8, decimal_places=2)
     item_90mm_rate = models.DecimalField(max_digits=8, decimal_places=2)
     item_pencil_rate = models.DecimalField(max_digits=8, decimal_places=2)
@@ -132,13 +132,14 @@ class InvoiceModel(models.Model):
 
     def save(self, *args, **kwargs):
         print("enter save fn")
+        self.shipping_address = self.shipping_address.capitalize()
+        self.shipping_city = self.shipping_city.capitalize()
+        self.driver_name = self.driver_name.capitalize()
+        self.assigned_vehicle = self.assigned_vehicle.upper()
         if not self.invoice_id:
-            print("enter in not invoice id ")
             current_datetime = datetime.now().strftime("%Y%m%d%H%M%S")
-            print(current_datetime)
             unique_id = f"CNS_{current_datetime}"
             self.invoice_id = unique_id
-            print(self.invoice_id)
         super().save(*args, **kwargs)
 
 

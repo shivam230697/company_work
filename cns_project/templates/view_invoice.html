@@ -31,7 +31,7 @@
         <button class="btn btn-primary mx-2 my-2"  id="printButton">Print</button>
         <a href="{% url 'view_invoices' %}" class="btn btn-primary mx-2 my-2" id="back_btn"
            style="float:right;" role="button">Back</a>
-        <div class="container border border-5 mt-5 text-center w-100 invoice-container" style="background-color:white;">
+        <div class="container border border-dark border-5 mt-5 text-center w-100 invoice-container" style="background-color:white;">
             <div class="row">
                 <div class="col-md-8">
                 <div class="col fs-1 display-5 text-start mt-3"><b>Chaudhary Girraj & Sons</b></div>
@@ -61,24 +61,12 @@
                         <dd class="col-md-10">{{customer.customer_gstin|safe}}</dd>
                         <dt class="col-md-2">Address:</dt>
                         <dd class="col-md-10">{{customer.customer_address}}, {{customer.customer_state}},  {{customer.zip_code}}</dd>
-
                         <dt class="col-md-2">Number:</dt>
                         <dd class="col-md-10">{{customer.customer_number}}</dd>
-
                     </dl>
-
                 </div>
                 <div class="col-6 text-start" style="border:1px black solid;">
 
-                    <!--<div class="row">
-                        <dl class="row">
-                            <dt class="col-md-2">
-                                <b>INVOICE ID: </b>
-                            </dt>
-                            <dd class="col-md-10">{{invoice.invoice_id}}<br></dd>
-                        </dl>
-
-                    </div>-->
                         <div class="col">
                             <span class="fs-6"><u>Shipping Details:</u></span>
                             <dl class="row">
@@ -96,24 +84,12 @@
 
 
                 </div>
-
             </div>
 
-            <!--<div class="row" >
-                <div class="col-6 text-start">Shipping Details:<hr>
-                    <address>
-                        Shipping address:<br>
-                        Shipping State:<br>
-                        Shipping City:<br>
-                        Zip Code:
-                    </address>
-
-                </div>
-            </div>-->
             <div class="row mt-2">
-                <div class="col">
-                    <table class="table">
-                        <thead>
+                <div class="col table-responsive">
+                    <table class="table text-nowrap cd " >
+                        <thead class="border">
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Product</th>
@@ -124,11 +100,11 @@
                                 <th scope="col">Total</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="border">
                             <tr>
                                 <th scope="row">1</th>
                                     <td>Item 45mm</td>
-                                    <td>2</td>
+                                    <td>8</td>
                                     <td>{{invoice.item_45mm_quantity}} Kg</td>
                                     <td>{{invoice.item_45mm_rate}} Rs</td>
                                     <td>{{invoice.total_45mm}} Rs</td>
@@ -136,7 +112,7 @@
                             <tr>
                                 <th scope="row">2</th>
                                     <td>Item 90mm</td>
-                                    <td>2</td>
+                                    <td>8</td>
                                     <td>{{invoice.item_90mm_quantity}} Kg</td>
                                     <td>{{invoice.item_90mm_rate}} Rs</td>
                                     <td>{{invoice.total_90mm}} Rs</td>
@@ -144,71 +120,97 @@
                             <tr>
                                 <th scope="row">3</th>
                                     <td>Item Pencil</td>
-                                    <td>2</td>
+                                    <td>8</td>
                                     <td>{{invoice.item_pencil_quantity}} Kg</td>
                                     <td>{{invoice.item_pencil_rate}} Rs</td>
                                     <td>{{invoice.total_pencil}} Rs</td>
                             </tr>
 
-                    <!-- Add more rows for additional products -->
                         </tbody>
+                        <tfoot style="font-size:12px;">
+                            <tr>
+                                <td colspan="3" class="border"><strong >Payment details</strong></td>
+                                <td class="border" colspan="2"><strong>Sub Total</strong></td>
+                                <td class="border">{{invoice.total}} Rs</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3" rowspan="3" class="border text-start" style="font-size:12px;">
+
+                                    <!--<dl class="row">
+                                        <dt class="col-4">Account No.</dt>
+                                        <dd class="col-8">39238765008</dd>
+                                        <dt class="col-4">BANK NAME</dt>
+                                        <dd class="col-8">HDFC</dd>
+                                        <dt class="col-4">BANK BRANCH</dt>
+                                        <dd class="col-8">CITY CENTER</dd>
+                                        <dt class="col-4">BANK IFSC</dt>
+                                        <dd class="col-8">HDFC000023</dd>
+                                    </dl>-->
+
+                                    <table class="table" >
+                                        <tr>
+                                            <th class="border-right">Account Number</th>
+                                            <td>39238765008</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Bank Name</th>
+                                            <td>HDFC</td>
+                                        </tr>
+                                        <tr>
+                                            <th>BANK BRANCH </th>
+                                            <td>CITY CENTER</td>
+                                        </tr>
+                                        <tr>
+                                            <th>BANK IFSC</th>
+                                            <td>HDFC000023</td>
+                                        </tr>
+                                    </table>
+                                </td>
+
+                                <td class="border" colspan="2"><strong>GST</strong></td>
+                                <td class="border">{{invoice.gst}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="border" colspan="2"><strong>Discount</strong></td>
+                                <td class="border">{{invoice.discount}}%</td>
+                            </tr>
+                            <tr>
+                                <td class="border" colspan="2"><strong>Payment</strong></td>
+                                <td class="border">{{invoice.payment}} Rs</td>
+                            </tr>
+                            <tr>
+                                <td class="border text-start" colspan="6"><strong>Payment(in words):</strong> {{words_payment}}</td>
+
+                            </tr>
+                        </tfoot>
                     </table>
 
                 </div>
             </div>
             <div class="row" style="font-size:12px;">
-                <div class="col-6 text-start">
+                <div class="row">
+                    <div class="col text-start">
+                        <h5>Terms and Conditions:</h5>
+                        <ol>
+                            <li>Our responsibility ceases as soon as goods leave our premises</li>
+                            <li>subject to rajasthan jurisdiction</li>
+                            <li>Goods once sold will not be taken back</li>
 
-                    <dl class="row">
-                        <dt class="col-6">Sub Total:</dt>
-                        <dd class="col-6">{{invoice.total}} Rs</dd>
-                        <dt class="col-6">GST: </dt>
-                        <dd class="col-6">{{invoice.gst}}%</dd>
-                        <dt class="col-6">Discount: </dt>
-                        <dd class="col-6">{{invoice.discount}}%</dd>
-                        <dt class="col-6">Payment</dt>
-                        <dd class="col-6">{{invoice.payment}} Rs</dd>
-                    </dl>
-                </div>
-                <div class="col-6 text-start">
-                    <h6>Payment Details:</h6>
-                    <dl class="row">
-                        <dt class="col-6">BANK NAME</dt>
-                        <dd class="col-6">HDFC</dd>
-                        <dt class="col-6">BANK BRANCH</dt>
-                        <dd class="col-6">CITY CENTER</dd>
-                        <dt class="col-6">BANK IFSC</dt>
-                        <dd class="col-6">HDFC000023</dd>
-                    </dl>
-                </div>
-                <hr>
-
-            <div class="row">
-
-
-                <div class="col text-start">
-                    <h5>Terms and Conditions:</h5>
-                    <ol>
-                        <li>Our responsibility ceases as soon as goods leave our premises</li>
-                        <li>subject to rajasthan jurisdiction</li>
-                        <li>Goods once sold will not be taken back</li>
-
-                    </ol>
+                        </ol>
+                    </div>
                 </div>
 
-            </div>
-            <div class="row mt-5">
-                <div class="col-12 text-end">
-                    <p>Authorised Signature</p>
+                <div class="row mt-5">
+                    <div class="col-12 text-end">
+                        <p>Authorised Signature</p>
+                    </div>
                 </div>
             </div>
 
         </div>
-            <div class="container mt-5 mt-5"></div>
-        </div>
-</div>
 
-{% endif %}
+    {% endif %}
+
     <script>
         $(document).ready(function () {
             $( "#printButton" ).click(function() {
@@ -221,5 +223,6 @@
 
         });
     </script>
+
 </body>
 </html>

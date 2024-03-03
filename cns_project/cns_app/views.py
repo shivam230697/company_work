@@ -14,6 +14,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
+from num2words import num2words
 
 
 def index(request):
@@ -46,6 +47,7 @@ def raw_material(request):
                 for error in errors:
                     messages.error(request, error)
             print(rm_form.errors)
+            return render(request, "raw_material.html", context={'raw_material_form': RawMaterialForm()})
         return render(request, "raw_material.html", context={'raw_material_form': RawMaterialForm()})
     if request.method == 'GET':
         return render(request, "raw_material.html", context={'raw_material_form': rm_form})
@@ -195,9 +197,9 @@ def add_invoice(request):
             invoice_model.item_45mm_rate = invoice_form.cleaned_data['price_item1'] or 0
             invoice_model.item_90mm_rate = invoice_form.cleaned_data['price_item2'] or 0
             invoice_model.item_pencil_rate = invoice_form.cleaned_data['price_item3'] or 0
-            invoice_model.total_45mm = invoice_model.item_45mm_quantity * invoice_model.item_45mm_rate
-            invoice_model.total_90mm = invoice_model.item_90mm_quantity * invoice_model.item_90mm_rate
-            invoice_model.total_pencil = invoice_model.item_pencil_quantity * invoice_model.item_pencil_rate
+            invoice_model.total_45mm = invoice_model.item_45mm_quantity/1000 * invoice_model.item_45mm_rate
+            invoice_model.total_90mm = invoice_model.item_90mm_quantity/1000 * invoice_model.item_90mm_rate
+            invoice_model.total_pencil = invoice_model.item_pencil_quantity/1000 * invoice_model.item_pencil_rate
             invoice_model.shipping_address = invoice_form.cleaned_data['shipping_address']
             invoice_model.shipping_state = invoice_form.cleaned_data['shipping_state']
             invoice_model.shipping_city = invoice_form.cleaned_data['shipping_city']
@@ -424,7 +426,12 @@ def view_invoice(request, invoice_id):
     try:
         invoice = InvoiceModel.objects.get(pk=invoice_id)
         customer = Customer.objects.get(pk=invoice.customer.id)
-        return render(request, 'view_invoice.html', {'invoice': invoice, 'customer': customer})
+        integer_part = int(invoice.payment)
+        decimal_part = invoice.payment - int(invoice.payment)
+
+        words_payment = num2words(integer_part).capitalize() + " Rupees & " + num2words(decimal_part*100).capitalize() + " Paise"
+        return render(request, 'view_invoice.html',
+                      {'invoice': invoice, 'customer': customer, 'words_payment': words_payment})
 
     except:
 

@@ -50,7 +50,7 @@ class InvoiceForm(forms.Form):
     invoice_env = Environment()
     customer = forms.ModelChoiceField(queryset=Customer.objects.all(), required=True)
 
-    total = forms.DecimalField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
+    total = forms.DecimalField(decimal_places=2, widget=forms.TextInput(attrs={'readonly': 'readonly'}))
     gst = forms.IntegerField()
     discount = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control'}), required=False, initial=0)
     payment = forms.DecimalField(widget=forms.TextInput(attrs={'readonly': 'readonly'}))
@@ -61,17 +61,17 @@ class InvoiceForm(forms.Form):
     item_pencil = forms.BooleanField(label='Item 3', required=False,
                                      widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
 
-    quantity_item1 = forms.IntegerField(label='Quantity for Item 1', required=False,
+    quantity_item1 = forms.DecimalField(label='Quantity for Item 1', required=False,
                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
     price_item1 = forms.DecimalField(label='Price for Item 1', required=False,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
-    quantity_item2 = forms.IntegerField(label='Quantity for Item 2', required=False,
+    quantity_item2 = forms.DecimalField(label='Quantity for Item 2', required=False,
                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
     price_item2 = forms.DecimalField(label='Price for Item 2', required=False,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
 
-    quantity_item3 = forms.IntegerField(label='Quantity for Item 3', required=False,
+    quantity_item3 = forms.DecimalField(label='Quantity for Item 3', required=False,
                                         widget=forms.NumberInput(attrs={'class': 'form-control'}))
     price_item3 = forms.DecimalField(label='Price for Item 3', required=False,
                                      widget=forms.NumberInput(attrs={'class': 'form-control'}))
