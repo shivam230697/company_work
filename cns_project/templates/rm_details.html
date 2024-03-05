@@ -1,4 +1,4 @@
-{% extends 'base.html '%}
+{% extends 'base.html' %}
 {% load static %}
 {% load bootstrap5 %}
 {% block title %}Detail Raw Material{% endblock %}
@@ -16,8 +16,10 @@
                     <th>Sr no.</th>
                     <th>RST</th>
                     <th>Net Weight</th>
+                    <th>Kanta Rate</th>
                     <th>Rate</th>
                     <th>total</th>
+                    <th>Paid Amount</th>
                     <th scope="col">Created at </th>
                     <th scope="col">Updated at </th>
                     {% if user.is_superuser %}
@@ -33,8 +35,10 @@
                         <td style="  ">{{ forloop.counter }}</td>
                         <td id="raw_rst">{{ item.rst_no |safe }}</td>
                         <td>{{ item.net_wt|safe}} Kg</td>
+                        <td>{{ item.kanta_rate }} Rs</td>
                         <td>{{ item.rate }} Rs</td>
                         <td>{{ item.total }} Rs</td>
+                        <td>{{ item.paid_amount }} Rs</td>
                         <td>{{item.created_at |date:"d-m-y H:i:s A"}}</td>
                         <td>{{item.updated_at |date:"d-m-y H:i:s A"}}</td>
                         {% if user.is_superuser %}
@@ -67,6 +71,35 @@
                 $(this).toggle($(this).find("#raw_rst").text().toLowerCase().indexOf(value) > -1);
             });
         });
+        function updateData() {
+                // AJAX request to get updated data
+                $.ajax({
+                    type: "GET",
+                    url: "/raw_material_details/",  // URL of the view to get data
+                    success: function(response) {
+                        // Update the displayed data
+                        //$("tbody").html(response);
+                        console.log(response);
+                    },
+                    error: function(error) {
+                        console.log("Error:", error);
+                    }
+                });
+            }
+
+             function updateTable(data) {
+                // Clear existing rows
+                $("#dataTable tbody").empty();
+
+                // Append new rows
+                $.each(data, function(index, item) {
+                    $("#raw_table tbody").append("<tr><td>" + item.field1 + "</td><td>" + item.field2 + "</td></tr>");
+                });
+            }
+
+            //updateData();
+            // Update data every 5 seconds (adjust as needed)
+            //setInterval(updateData, 1000);
     });
 </script>
 

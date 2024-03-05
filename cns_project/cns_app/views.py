@@ -37,9 +37,14 @@ def raw_material(request):
             rst_f = rm_form.cleaned_data['rst_no']
             net_wt_f = rm_form.cleaned_data['net_wt']
             rate_f = rm_form.cleaned_data['rate']
+            kanta_rate = rm_form.cleaned_data['kanta_rate']
             total_f = rm_form.cleaned_data['total']
             rm_model = RawMaterialModel()
             rm_model.rst_no, rm_model.net_wt, rm_model.rate, rm_model.total = rst_f, net_wt_f, rate_f, total_f
+            rm_model.kanta_rate = kanta_rate
+            paid_amount = rm_form.cleaned_data['paid_amount']
+            rm_model.paid_amount = paid_amount
+            rm_model.created_at = rm_form.cleaned_data['manual_created_at']
             rm_model.save()
             messages.success(request, "Successfully Added Raw Material")
         else:
@@ -80,6 +85,8 @@ def confirm(request, pk):
         data.net_wt = request.POST.get("net_wt")
         data.rate = request.POST.get("rate")
         data.total = request.POST.get("total")
+        data.created_at = request.POST.get("created_at")
+        data.kanta_rate = request.POST.get("kanta_rate")
     except Exception as error:
         messages.error(request, error)
     if request.method == "POST":

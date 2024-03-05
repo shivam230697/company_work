@@ -14,7 +14,9 @@ class RawMaterialModel(models.Model):
     rst_no = models.IntegerField(unique=True)
     net_wt = models.DecimalField(max_digits=12, decimal_places=2)
     rate = models.DecimalField(max_digits=12, decimal_places=2)
+    kanta_rate = models.DecimalField(decimal_places=2, max_digits=12, null=True, blank=True)
     total = models.DecimalField(max_digits=12, decimal_places=2)
+    paid_amount = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

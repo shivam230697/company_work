@@ -16,11 +16,14 @@ class RawMaterialForm(forms.ModelForm):
     rst_no = forms.IntegerField(min_value=0, required=True, error_messages={'required': 'RST is required field'})
     net_wt = forms.DecimalField(required=True, decimal_places=2,
                                 error_messages={'required': 'Weight is required field'})
+    kanta_rate = forms.DecimalField(decimal_places=2, max_digits=12, initial=100)
     rate = forms.DecimalField(
         required=True, decimal_places=2,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'required field'}),
         error_messages={'required': 'Rate is required field'}
     )
+    paid_amount = forms.DecimalField(decimal_places=2, max_digits=12, required=True)
+    manual_created_at = forms.DateTimeField()
 
     class Meta:
         model = RawMaterialModel
