@@ -23,11 +23,14 @@
         {% csrf_token %}
         <div class=" container form-group mt-5 " style=" border: 2px solid black; border-radius: 10px;">
           <h2>Sign Up</h2>
+            <label for="{{ form.first_name.id_for_label }}">Name:</label>
+          <input type="text" class="form-control" id="{{ form.first_name.id_for_label }}" name="{{ form.first_name.html_name }}" value="{{ form.first_name.value|default_if_none:'' }}" required>
+
           <label for="{{ form.username.id_for_label }}">Username:</label>
-          <input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default_if_none:'' }}">
+          <input type="text" class="form-control" id="{{ form.username.id_for_label }}" name="{{ form.username.html_name }}" value="{{ form.username.value|default_if_none:'' }}" required>
           <div class="form-text text-muted">*Required. 150 characters or fewer.</div>
           <label for="{{ form.password1.id_for_label }}">Password:</label>
-          <input type="password" class="form-control" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" value="{{ form.password1.value|default_if_none:'' }}">
+          <input type="password" class="form-control" id="{{ form.password1.id_for_label }}" name="{{ form.password1.html_name }}" value="{{ form.password1.value|default_if_none:'' }}" required>
 
           <ul class="text-muted">
                     <li >Your password can’t be too similar to your other personal information.</li>
@@ -36,7 +39,7 @@
                     <li >Your password can’t be entirely numeric.</li>
           </ul>
           <label for="{{ form.password2.id_for_label }}">Password confirmation::</label>
-          <input type="password" class="form-control" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" value="{{ form.password2.value|default_if_none:'' }}">
+          <input type="password" class="form-control" id="{{ form.password2.id_for_label }}" name="{{ form.password2.html_name }}" value="{{ form.password2.value|default_if_none:'' }}" required>
           <div class="form-text text-muted">Enter the same password as before, for verification.</div>
 
           <br><button type="submit" class="btn btn-primary">Sign Up</button>

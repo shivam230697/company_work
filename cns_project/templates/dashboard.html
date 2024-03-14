@@ -5,7 +5,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
 <div class="container-fluid">
-    <div class="row flex-nowrap">
+    <div class="d-flex">
 
 
         <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
@@ -21,7 +21,10 @@
                             <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Reports</span></a>
                     </li>
 
-
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-table"></i> <span class=" ms-1 d-none d-sm-inline">Raw material</span></a>
+                    </li>
 
 
 
@@ -50,32 +53,37 @@
             </div>
         </div>
 
-        <div class="col py-3">
+        <div class="col py-3m mx-2 my-2">
             {% include 'message.html'%}
             <form method="post" class="post-form" action="{% url 'dashboard' %}">
                 {% csrf_token%}
 
                 <!-- Input with Icon 1 -->
-                <div class="mb-3">
+                <div class="mb-3 ">
                     <div class="input-group">
                         <span class="input-group-text" id="icon1">From</span>
                         <input type="date" class="form-control" id="inputWithIcon1"
                                onfocus="this.max=new Date().toISOString().split('T')[0]"
-                               placeholder="Username" name="from_date" aria-describedby="icon1" required>
+                               placeholder="search from " name="from_date" aria-describedby="icon1" required>
                     </div>
                 </div>
 
                 <!-- Input with Icon 2 -->
-                <div class="mb-3">
+                <div class="mb-3 ">
                     <div class="input-group">
                         <span class="input-group-text" id="icon2">To</span>
                         <input type="date" class="form-control" id="inputWithIcon2"
                                onfocus="this.max=new Date().toISOString().split('T')[0]"
-                               placeholder="Password" name="to_date" aria-describedby="icon2" required>
+                               placeholder="To Date" name="to_date" aria-describedby="icon2" required>
                     </div>
                 </div>
 
                 <div class="d-flex flex-row">
+                    <input type="button" class=" mx-2 btn btn-danger" value="Today">
+                    <input type="button" class="mx-2 btn btn-danger" value="apply filter">
+                </div>
+
+                <div class="d-lg-flex flex-row">
 
                     <div class="mb-3 px-2" >
                         <input type="submit"
@@ -92,7 +100,7 @@
             </form>
                 <br>
 
-            <div class="d-flex  flex-row " id="d1">
+            <div class="d-lg-flex  flex-row " id="d1">
 
                 {% if btn_name == 'show production report'%}
                 <table id="pt" class=" table   table-striped table-bordered mt-2  text-center align-middle"
@@ -185,7 +193,6 @@
             calculate_production_total();
         }
         else if (btnName == 'show raw material report') {
-            console.log("do somethig else");
 
             calculate_raw_material();
         }
@@ -244,10 +251,10 @@
                 totalColumn2 += valueColumn2;
                 totalColumn3 += valueColumn3;
             });
-
+            var average_rate = totalColumn3/totalColumn1;
             // Display the total in the respective span elements
-            $('#pntwt_total').text('Total net weight: ' + totalColumn1);
-            $('#pntwt_total').append('<br>Total Rate: ' + totalColumn2);
+            $('#pntwt_total').text('Total net weight: ' + totalColumn1.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Rs');
+            $('#pntwt_total').append('<br>Average Rate: ' + average_rate);
             $('#pntwt_total').append('<br>Total Payment: ' + totalColumn3);
             $('#date_range').text('From: ' + start_date );
             $('#date_range').append('<br> To:         ' + last_date);

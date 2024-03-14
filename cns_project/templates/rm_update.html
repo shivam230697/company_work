@@ -18,7 +18,7 @@
                 <input id="id_kanta_rate" name="kanta_rate" type="text" value="{{data.kanta_rate}}"><br><br>
 
                 <label for="id_created_at">Creation Date:</label><br>
-                <input id="id_created_at" name="created_at" type="datetime-local" value="{{created_at.kanta_rate}}"><br><br>
+                <input id="id_created_at" name="created_at" type="datetime-local" value="{{data.created_at|date:'Y-m-d\TH:i' }}"><br><br>
 
                 <label for="raw_rate">RATE:</label><br>
                 <input id="raw_rate" name="rate" type="text" value="{{data.rate}}"><br><br>

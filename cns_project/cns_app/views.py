@@ -3,8 +3,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 # Create your views here.
-from .forms import IndexForm, RawMaterialForm, ProductionForm, LoginForm, InvoiceForm, PaymentForm, CustomerForm
-from .models import RawMaterialModel, ProductionModel, InvoiceModel, PaymentModel, Customer
+from .forms import IndexForm, RawMaterialForm, ProductionForm, LoginForm, InvoiceForm, PaymentForm, CustomerForm, \
+    RawExpenseForm
+from .models import RawMaterialModel, ProductionModel, InvoiceModel, PaymentModel, Customer, RawExpenseModel
 from django.contrib import messages
 
 from django.shortcuts import render, redirect
@@ -16,12 +17,12 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.admin.views.decorators import staff_member_required
 from num2words import num2words
 
-
-def index(request):
-    index_form = IndexForm()
-    rm_form = RawMaterialForm()
-    data = RawMaterialModel.objects.all()
-    return render(request, "index.html", context={'form': index_form, 'rm_form': rm_form, 'data': data})
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from django.template.loader import get_template
+from reportlab.pdfgen import canvas
+from xhtml2pdf import pisa
 
 
 def base(request):
@@ -44,7 +45,7 @@ def raw_material(request):
             rm_model.kanta_rate = kanta_rate
             paid_amount = rm_form.cleaned_data['paid_amount']
             rm_model.paid_amount = paid_amount
-            rm_model.created_at = rm_form.cleaned_data['manual_created_at']
+
             rm_model.save()
             messages.success(request, "Successfully Added Raw Material")
         else:
@@ -109,6 +110,64 @@ def delete_raw_material_entry(request, pk):
         messages.error(request, error)
     rm_data = RawMaterialModel.objects.all()
     return render(request, "rm_details.html", context={'rm_data': rm_data})
+
+
+@login_required
+def raw_expense(request):
+    raw_expense_form = RawExpenseForm()
+    expenses = RawExpenseModel.objects.all()
+    diesel_instances = RawExpenseModel.objects.filter(type="diesel")
+    diesel_price = sum(diesel_amount.expense_amount for diesel_amount in diesel_instances)
+
+    labour_instances = RawExpenseModel.objects.filter(type="labour")
+
+    labour_price = sum(labour_amount.expense_amount for labour_amount in labour_instances)
+    expense_total = sum(amount.expense_amount for amount in expenses)
+    return render(
+        request,
+        'raw_expense_add.html',
+        {
+            'raw_expense_form': raw_expense_form,
+            'expense_data': expenses,
+            'expense_total': expense_total,
+            'diesel_price': diesel_price,
+            'labour_price': labour_price,
+        }
+    )
+
+
+@csrf_exempt
+def raw_expense_add(request):
+    print(request)
+    if request.method == 'POST':
+        raw_expense_form = RawExpenseForm(request.POST)
+        if raw_expense_form.is_valid():
+            expense_instance = RawExpenseModel()
+            expense_instance.type = raw_expense_form.cleaned_data['type']
+            expense_instance.description = raw_expense_form.cleaned_data['description']
+            expense_instance.expense_amount = raw_expense_form.cleaned_data['expense_amount']
+            expense_instance.save()
+            expense_data = list(RawExpenseModel.objects.values())
+
+            expenses = RawExpenseModel.objects.all()
+            diesel_instances = RawExpenseModel.objects.filter(type="diesel")
+            labour_instances = RawExpenseModel.objects.filter(type="labour")
+
+            labour_price = sum(labour_amount.expense_amount for labour_amount in labour_instances)
+            diesel_price = sum(diesel_amount.expense_amount for diesel_amount in diesel_instances)
+            expense_total = sum(amount.expense_amount for amount in expenses)
+            return JsonResponse(
+                {
+                    'success': 'saved',
+                    'expense_data': expense_data,
+                    'expense_total': expense_total,
+                    'diesel_price': diesel_price,
+                    'labour_price': labour_price,
+                }
+            )
+        else:
+            return JsonResponse({'success': False, 'errors': raw_expense_form.errors})
+    return JsonResponse({'success': False, 'errors': 'Invalid request method'})
 
 
 @login_required
@@ -204,9 +263,9 @@ def add_invoice(request):
             invoice_model.item_45mm_rate = invoice_form.cleaned_data['price_item1'] or 0
             invoice_model.item_90mm_rate = invoice_form.cleaned_data['price_item2'] or 0
             invoice_model.item_pencil_rate = invoice_form.cleaned_data['price_item3'] or 0
-            invoice_model.total_45mm = invoice_model.item_45mm_quantity/1000 * invoice_model.item_45mm_rate
-            invoice_model.total_90mm = invoice_model.item_90mm_quantity/1000 * invoice_model.item_90mm_rate
-            invoice_model.total_pencil = invoice_model.item_pencil_quantity/1000 * invoice_model.item_pencil_rate
+            invoice_model.total_45mm = invoice_model.item_45mm_quantity / 1000 * invoice_model.item_45mm_rate
+            invoice_model.total_90mm = invoice_model.item_90mm_quantity / 1000 * invoice_model.item_90mm_rate
+            invoice_model.total_pencil = invoice_model.item_pencil_quantity / 1000 * invoice_model.item_pencil_rate
             invoice_model.shipping_address = invoice_form.cleaned_data['shipping_address']
             invoice_model.shipping_state = invoice_form.cleaned_data['shipping_state']
             invoice_model.shipping_city = invoice_form.cleaned_data['shipping_city']
@@ -282,7 +341,7 @@ def user_signup(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('base')
+            return redirect('dashboard')
     else:
         form = UserCreationForm()
     return render(request, 'signup.html', {'form': form})
@@ -339,11 +398,6 @@ def dashboard(request):
             )
 
     return render(request, 'dashboard.html', {'data': '', 'btn_name': "button_name"})
-
-
-def my_page(request):
-    messages.info(request, "uploaded successfully")
-    return render(request, "my_page.html")
 
 
 @login_required
@@ -436,7 +490,8 @@ def view_invoice(request, invoice_id):
         integer_part = int(invoice.payment)
         decimal_part = invoice.payment - int(invoice.payment)
 
-        words_payment = num2words(integer_part).capitalize() + " Rupees & " + num2words(decimal_part*100).capitalize() + " Paise"
+        words_payment = num2words(integer_part).capitalize() + " Rupees & " + num2words(
+            decimal_part * 100).capitalize() + " Paise"
         return render(request, 'view_invoice.html',
                       {'invoice': invoice, 'customer': customer, 'words_payment': words_payment})
 
@@ -467,3 +522,87 @@ def payment_history(request, customer_id):
             'remaining_amount': remaining_amount
         }
     )
+
+
+def index(request):
+    index_form = IndexForm()
+    rm_form = RawMaterialForm()
+    data = RawMaterialModel.objects.all()
+    return render(request, "index.html", context={'form': index_form, 'rm_form': rm_form, 'data': data})
+
+
+@csrf_exempt
+def get_data(request):
+    check = request.GET.get('check')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+    data = RawMaterialModel.objects.all()
+    if request.method == "GET":
+        # template = get_template('export_raw.html')
+        # context = {'data': data}
+        # html = template.render(context)
+        # response = HttpResponse(content_type='application/pdf')
+        # p = canvas.Canvas(response)
+        # p.drawString(100, 100, "Customer List")
+        # y_position = 780
+        # for item in data:
+        #     p.drawString(100, y_position, f"Field 1: {item.rst_no}")
+        #     p.drawString(100, y_position - 15, f"Field 2: {item.id}")
+        #     # Add more fields as needed
+        #
+        #     y_position -= 30
+        # p.showPage()
+        # p.save()
+        template_path = 'export_raw.html'
+
+        context = {'data': data}
+
+        response = HttpResponse(content_type='application/pdf')
+
+        response['Content-Disposition'] = 'filename="raw_report.pdf"'
+
+        template = get_template(template_path)
+
+        html = template.render(context)
+
+        # create a pdf
+        pisa_status = pisa.CreatePDF(
+            html, dest=response)
+        # if error then show some funy view
+        if pisa_status.err:
+            return HttpResponse('We had some errors <pre>' + html + '</pre>')
+        return response
+
+    return JsonResponse({'start_date': start_date, 'end_date': end_date, 'check': check})
+
+
+def my_page(request):
+    if request.method == "POST":
+        start_date = request.POST.get('from_date', None)
+        last_date = request.POST.get('to_date', None)
+        try:
+            rm_data = RawMaterialModel.objects.raw(
+                "select * from cns_app_rawmaterialmodel  where  DATE(created_at) between %s and %s",
+                [start_date, last_date])
+            return render(request, 'my_page.html', {'data': rm_data, 'start_date': start_date, 'last_date': last_date})
+
+        except Exception as error:
+            messages.error(request, error)
+            return JsonResponse(request, 'data', safe=False)
+    return render(request, "my_page.html")
+
+
+@csrf_exempt
+def fetch_raw_report(request):
+    if request.method == "POST":
+        start_date = request.POST.get('from_date', None)
+        last_date = request.POST.get('to_date', None)
+        try:
+            rm_data = RawMaterialModel.objects.raw(
+                "select * from cns_app_rawmaterialmodel  where  DATE(created_at) between %s and %s",
+                [start_date, last_date])
+            return JsonResponse({'start_date': start_date, 'end_date': last_date, 'check': 'check'})
+
+        except Exception as error:
+            messages.error(request, error)
+            return JsonResponse(request, 'data', safe=False)

@@ -23,11 +23,18 @@ class RawMaterialForm(forms.ModelForm):
         error_messages={'required': 'Rate is required field'}
     )
     paid_amount = forms.DecimalField(decimal_places=2, max_digits=12, required=True)
-    manual_created_at = forms.DateTimeField()
 
     class Meta:
         model = RawMaterialModel
         fields = "__all__"
+
+
+class RawExpenseForm(forms.Form):
+    from .environment import Environment
+    env = Environment()
+    type = forms.ChoiceField(choices=env.Raw_Expense_Choices, widget=forms.Select(attrs={'class': 'form-control'}))
+    description = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control'}))
+    expense_amount = forms.DecimalField(decimal_places=2, max_digits=12, widget=forms.TextInput(attrs={'class': 'form-control'}))
 
 
 class ProductionForm(forms.ModelForm):

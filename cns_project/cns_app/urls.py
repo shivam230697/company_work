@@ -24,12 +24,19 @@ urlpatterns = [
     path('customer_list/', views.view_customer, name="check_customer"),
     path('check_invoice/<int:invoice_id>', views.view_invoice, name="check_invoice"),
     path('payment_history/<int:customer_id>', views.payment_history, name="payment_history"),
-
     path('payment/', views.payment, name="payment"),
     path('view_payment/', views.view_payment, name="view_payments"),
+    path('raw_expense/', views.raw_expense, name="raw_expense"),
+    path('raw_expense_add/', views.raw_expense_add, name="raw_expense_add"),
 
     path('login/', user_login, name='login'),
     path('logout/', user_logout, name='logout'),
     path('signup/', user_signup, name='signup'),
+
+
+
+    # ajax urls
+    path('get_data/', views.get_data, name="get_data"),
+    path('fetch_raw_report/', views.fetch_raw_report, name="fetch_raw_report"),
 
 ]

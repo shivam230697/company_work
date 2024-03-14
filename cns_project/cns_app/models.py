@@ -34,9 +34,21 @@ class RawMaterialModel(models.Model):
         super().save(*args, **kwargs)
 
 
+class RawExpenseModel(models.Model):
+    from .environment import Environment
+    env = Environment()
+    raw_choice = env.Raw_Expense_Choices
+    expense_id = models.AutoField(primary_key=True)
+    type = models.CharField(max_length=20, choices=raw_choice)
+    description = models.TextField()
+    expense_amount = models.DecimalField(decimal_places=2, max_digits=12)
+
+    def __str__(self):
+        return str(self.expense_id) + ' ' + str(self.type)
+
 class ProductionModel(models.Model):
     product_rst = models.IntegerField(unique=True)
-    vehicle_no = models.CharField(blank=True, null=True, max_length=10,  default="UNKNOWN")
+    vehicle_no = models.CharField(blank=True, null=True, max_length=10, default="UNKNOWN")
     product_net_weight = models.DecimalField(max_digits=12, decimal_places=2)
 
     created_at = models.DateTimeField(auto_now_add=True)

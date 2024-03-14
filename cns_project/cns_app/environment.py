@@ -42,3 +42,9 @@ class Environment:
         ('LD', 'Lakshadweep'),
         ('PY', 'Puducherry'),
     ]
+
+    Raw_Expense_Choices = (
+        ('labour', 'labour'),
+        ('diesel', 'diesel'),
+        ('Tripal', 'Tripal'),
+    )

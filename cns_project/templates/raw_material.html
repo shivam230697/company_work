@@ -28,8 +28,6 @@
                 <label for="id_paid_amount">Paid Amount:</label>
                 <input type="{{ raw_material_form.paid_amount.widget.input_type }}" class="form-control" id="id_paid_amount" name="paid_amount" value="{{ form.paid_amount.value|default_if_none:'' }}" placeholder="Required field" required>
 
-                <label for="id_manual_created_at">Date:</label>
-                <input type="datetime-local" class="form-control" id="id_manual_created_at" name="manual_created_at" value="{{ raw_material_form.manual_created_at.value|default_if_none:'' }}" >
 
                 <br><button type="submit" class="btn btn-primary">Submit</button>
             </form>
